@@ -5,7 +5,7 @@ This program, encapsulated in the Program class, is designed to visualize and an
 
 ## Class: Program
 ### Attributes
-vertices1: List of vertices from the first file.\n
+* **vertices1: List of vertices from the first file. **
 faces1: List of faces from the first file.
 vertices2: List of vertices from the second file.
 faces2: List of faces from the second file.
