@@ -1,1 +1,2 @@
-# Bachelor-thesis
+# Docunetation for the program
+
