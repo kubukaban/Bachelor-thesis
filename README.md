@@ -1,6 +1,6 @@
 ### Docunetation for the program
 
-#Program Documentation
+Program Documentation
 Overview
 This program, encapsulated in the Program class, is designed to visualize and analyze 3D objects stored in files. It allows users to load data from two different files, process the data to compute various geometric properties, and display the results using different types of plots. The user interface is built using tkinter.
 
