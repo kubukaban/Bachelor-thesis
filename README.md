@@ -19,7 +19,7 @@ This program, encapsulated in the Program class, is designed to visualize and an
 * **threshold_entry:** tk.Entry widget for the threshold value.
 ### Methods
 
-__init__(self)
+\__init__(self)
 Initializes the program, sets up the GUI, and defines important attributes.
 
 save(self)
