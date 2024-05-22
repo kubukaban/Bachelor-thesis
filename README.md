@@ -18,6 +18,7 @@ This program, encapsulated in the Program class, is designed to visualize and an
 * **radio_var:** tk.IntVar to store the value of the selected radio button.
 * **threshold_entry:** tk.Entry widget for the threshold value.
 ### Methods
+
 __init__(self)
 Initializes the program, sets up the GUI, and defines important attributes.
 
