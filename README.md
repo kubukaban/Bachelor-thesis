@@ -3,8 +3,8 @@
 ## Overview
 This program, encapsulated in the Program class, is designed to visualize and analyze 3D objects stored in files. It allows users to load data from two different files, process the data to compute various geometric properties, and display the results using different types of plots. The user interface is built using tkinter.
 
-Class: Program
-Attributes
+## Class: Program
+### Attributes
 vertices1: List of vertices from the first file.
 faces1: List of faces from the first file.
 vertices2: List of vertices from the second file.
@@ -17,7 +17,7 @@ type: Type of plot to be displayed ("boxplot" by default).
 log_scale: Boolean indicating whether to use a logarithmic scale for plots.
 radio_var: tk.IntVar to store the value of the selected radio button.
 threshold_entry: tk.Entry widget for the threshold value.
-Methods
+### Methods
 __init__(self)
 Initializes the program, sets up the GUI, and defines important attributes.
 
@@ -60,19 +60,19 @@ Displays 2D scatter plots of the selected measure for both files.
 scatter3D(self, selected)
 Displays 3D scatter plots of the selected measure for both files.
 
-Usage
-Loading Files
+## Usage
+### Loading Files
 Use the "Load first file" and "Load second file" buttons to load the data files. The files should be in a format where vertices are defined with lines starting with 'v ' and faces with lines starting with 'f '.
-Choosing Plot Type
+### Choosing Plot Type
 Select the plot type using the "Boxplot", "2D Scatterplot", and "3D Scatterplot" buttons.
-Choosing Measure
+### Choosing Measure
 Select the measure to be analyzed using the radio buttons. Options include various geometric ratios like pomer_polomerov, pomer_extremnych stran, etc.
-Threshold and Log Scale
+### Threshold and Log Scale
 Set the threshold value in the threshold entry box.
 Use the "Log scale" checkbox to toggle logarithmic scaling for the plots.
-Saving Data
+### Saving Data
 Use the "save" button to save the processed faces data to CSV files.
-Dependencies
+### Dependencies
 tkinter: For the graphical user interface.
 pandas: For data manipulation and storage.
 numpy: For numerical calculations.
