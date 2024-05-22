@@ -5,18 +5,18 @@ This program, encapsulated in the Program class, is designed to visualize and an
 
 ## Class: Program
 ### Attributes
-* **vertices1: List of vertices from the first file.**
-faces1: List of faces from the first file.
-vertices2: List of vertices from the second file.
-faces2: List of faces from the second file.
-filename1: Name of the first file.
-filename2: Name of the second file.
-alpha1, beta1, gamma1: Average angles for the first file.
-alpha2, beta2, gamma2: Average angles for the second file.
-type: Type of plot to be displayed ("boxplot" by default).
-log_scale: Boolean indicating whether to use a logarithmic scale for plots.
-radio_var: tk.IntVar to store the value of the selected radio button.
-threshold_entry: tk.Entry widget for the threshold value.
+* **vertices1:** List of vertices from the first file.
+* **faces1:** List of faces from the first file.
+* **vertices2:** List of vertices from the second file.
+* **faces2:** List of faces from the second file.
+* **filename1:** Name of the first file.
+* **filename2:** Name of the second file.
+* **alpha1, beta1, gamma1:** Average angles for the first file.
+* **alpha2, beta2, gamma2:** Average angles for the second file.
+* **type:** Type of plot to be displayed ("boxplot" by default).
+* **log_scale:** Boolean indicating whether to use a logarithmic scale for plots.
+* **radio_var:** tk.IntVar to store the value of the selected radio button.
+* **threshold_entry:** tk.Entry widget for the threshold value.
 ### Methods
 __init__(self)
 Initializes the program, sets up the GUI, and defines important attributes.
