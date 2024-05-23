@@ -27,7 +27,7 @@ ggplot(data1, aes(x = Radius.ratio)) +
   geom_histogram(binwidth = 0.1, fill = "blue", color = "black") +
   scale_y_log10() + 
   scale_x_log10()+
-  ggtitle("Histogram of Radius Ratio (Data1) with Logarithmic Y-Axis") +
+  ggtitle("Histogram of Radius Ratiofor BunnyComplex with Logarithmic Y-Axis") +
   xlab("Radius Ratio") +
   ylab("Frequency")
 
@@ -36,7 +36,7 @@ ggplot(data2, aes(x = Radius.ratio)) +
   geom_histogram(binwidth = 0.1, fill = "blue", color = "black") +
   scale_y_log10() +
   scale_x_log10() +
-  ggtitle("Histogram of Radius Ratio (Data2) with Logarithmic Y-Axis") +
+  ggtitle("Histogram of Radius Ratio for BunnyMiddle with Logarithmic Y-Axis") +
   xlab("Radius Ratio") +
   ylab("Frequency")
 
