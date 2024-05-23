@@ -20,7 +20,23 @@ ks.test(data2$Circumradius.to.edge, "pnorm", mean = mean(data2$Circumradius.to.e
 
 hist(data1$Radius.ratio)
 hist(data2$Radius.ratio)
+library(ggplot2)
+ggplot(data1, aes(x = Radius.ratio)) +
+  geom_histogram(binwidth = 0.1, fill = "blue", color = "black") +
+  scale_y_log10() + 
+  scale_x_log10()+
+  ggtitle("Histogram of Radius Ratio (Data1) with Logarithmic Y-Axis") +
+  xlab("Radius Ratio") +
+  ylab("Frequency")
 
+
+ggplot(data2, aes(x = Radius.ratio)) +
+  geom_histogram(binwidth = 0.1, fill = "blue", color = "black") +
+  scale_y_log10() +
+  scale_x_log10() +
+  ggtitle("Histogram of Radius Ratio (Data2) with Logarithmic Y-Axis") +
+  xlab("Radius Ratio") +
+  ylab("Frequency")
 
 # h0 complex = middle h1 compplex != middle
 wilcox.test(data1$Radius.ratio,data2$Radius.ratio, alternative = "two.sided")
