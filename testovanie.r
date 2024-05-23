@@ -21,8 +21,8 @@ ks.test(data2$Circumradius.to.edge, "pnorm", mean = mean(data2$Circumradius.to.e
 hist(data1$Radius.ratio)
 hist(data2$Radius.ratio)
 
+
 library(ggplot2)
-# ploting the distribution with axis set to log-scale
 ggplot(data1, aes(x = Radius.ratio)) +
   geom_histogram(binwidth = 0.1, fill = "blue", color = "black") +
   scale_y_log10() + 
