@@ -3,11 +3,11 @@ from tkinter import filedialog, messagebox, ttk # this is needed for dialogwindo
 import re    #regex for text manipulation
 import os    #librariry for uploading and saving files
 import subprocess
-
+import sys
 # firstly we need to import neseceary libraires for this program
 # this function bellow install library
 def install(package):
-    subprocess.check_call(["pip", "install", package])
+    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
 
 # firstly we try import libraries, if they are not in the enviroment they are installed via function
 try:
@@ -16,6 +16,7 @@ except ImportError:
     print("Pandas library is not installed. Installing...")
     install("pandas")
     import pandas as pd
+
     
 try:
     import numpy as np # numpy for fast calculation
@@ -31,6 +32,26 @@ except ImportError:
     install("matplotlib")
     import matplotlib.pyplot as plt
 
+try:
+    import trimesh # trimesh
+except ImportError:
+    print("Pandas library is not installed. Installing...")
+    install("trimesh")
+    import trimesh
+    
+try:
+    import pyglet
+    if pyglet.version >= '2.0':
+        install("pyglet<2")
+        import pyglet
+except ImportError:
+    print("Pyglet library is not installed. Installing...")
+    install("pyglet<2")
+    import pyglet
+    
+
+
+    
 try:
     from tqdm import tqdm # library for progress bar
 except ImportError:
@@ -48,9 +69,11 @@ class Program:
         self.faces1 = []    # list of faces from 1. file
         self.vertices2 = [] # list of vertices from 2. file
         self.faces2 = []    # list of faces from 2. file
+        self.path1 = ''     # path of the first file
+        self.path2 = ''     # path of the second file
         self.filename1 = '' # name of the first file
         self.filename2 = '' # name of the second file
-        self.alpha1 = 0     # average angles of the files, firstly set to 0
+        self.alpha1  = 0     # average angles of the files, firstly set to 0
         self.alpha2 = 0
         self.beta1 = 0
         self.beta2 = 0
@@ -63,6 +86,9 @@ class Program:
         root = tk.Tk()
         root.title("Obj Plotter")
         
+       
+        
+        
         # Load buttons for loading files
         load_button = tk.Button(root, text="Load first file", command=self.load_file1)
         load_button.pack()
@@ -74,6 +100,9 @@ class Program:
         self.threshold_entry.insert(2, "2")
         self.threshold_entry.pack()
         
+         #button to vizualize obj files
+        viz_button = tk.Button(root, text="Show files", command=self.viz_files)
+        viz_button.pack()
          # Buttons to choose plot type
         boxplot_button = tk.Button(root, text = "Boxplot", command = self.to_boxplot)
         boxplot_button.pack()
@@ -124,6 +153,29 @@ class Program:
         if filepath:
             self.faces2.to_csv(path_or_buf = filepath)
             print("File saved at:", filepath)
+            
+    
+    def viz_files(self):#method to show files
+        print(self.path1)
+        print(self.path2)
+        mesh1 = trimesh.load(self.path1) # first object
+        mesh2 = trimesh.load(self.path2)# second object
+        scale_factor = mesh1.extents / mesh2.extents # determin scaling factor
+
+        # Rescale mesh2
+        mesh2.apply_scale(scale_factor)
+
+        translation_vector = [5.0, 0.0, 0.0]  # Translation of 5 unit along the x-axis
+
+        # Translate the mesh
+        mesh1.vertices += translation_vector
+
+        # Add both meshes to a scene
+        scene = trimesh.Scene([mesh1, mesh2])
+
+        # Show the scene containing both meshes
+        scene.show()
+
 
     # Function to set plot type to boxplot
     def to_boxplot(self):
@@ -148,17 +200,20 @@ class Program:
     
     # Function to handle changes in plot and measure options
     def on_checked(self):
-        options = {1:"Radius ratio", 2:"Edge ratio", 3: "Circumradius to half perimeter",
-                   4:"Aspect ratio", 5:"Circumradius to edge", 6:"priemer"}
-        selected = self.radio_var.get()
-        if selected == 6:
-            self.average()
-        elif self.type == "boxplot":
-            self.boxplot(options[selected])
-        elif self.type == "scatter":
-            self.scatterplot(options[selected])
-        elif self.type == "3Dscatter":
-            self.scatter3D(options[selected])
+        try:
+            options = {1:"Radius ratio", 2:"Edge ratio", 3: "Circumradius to half perimeter",
+                       4:"Aspect ratio", 5:"Circumradius to edge", 6:"priemer"}
+            selected = self.radio_var.get()
+            if selected == 6:
+                self.average()
+            elif self.type == "boxplot":
+                self.boxplot(options[selected])
+            elif self.type == "scatter":
+                self.scatterplot(options[selected])
+            elif self.type == "3Dscatter":
+                self.scatter3D(options[selected])
+        except Exception as e:
+                messagebox.showerror("Error", f" Problem wiht plotting. Did you choose measure?: {e}")
         
         
     # Function to load the first file    
@@ -167,6 +222,7 @@ class Program:
         vertices = []
         file_path = filedialog.askopenfilename()
         if file_path:
+            self.path1 = file_path
             file_name = os.path.basename(file_path)
             self.filename1 = file_name
             try:
@@ -200,6 +256,7 @@ class Program:
         vertices = []
         file_path = filedialog.askopenfilename()
         if file_path:
+            self.path2 = file_path
             file_name = os.path.basename(file_path)
             self.filename2 = file_name
             try:
@@ -287,10 +344,10 @@ class Program:
         faces["Circumradius to half perimeter"] = result[2, :] * 3 * np.sqrt(3) / 2
         faces["Aspect ratio"] = result[3, :] / (2 * np.sqrt(3))
         faces["Circumradius to edge"] = result[4, :] * 2
-        faces['najdlhsia'] = result[5, :]
-        faces['obsahy'] = result[6]
-        faces['min_uhol'] = result[7, :] 
-        faces['max_uhol'] = result[8, :] 
+        faces['longest'] = result[5, :]
+        faces['areas'] = result[6]
+        faces['min_angle'] = result[7, :] 
+        faces['max_angle'] = result[8, :] 
         print('koniec')
         mask1 = ~np.isnan(alphas)
         mask2 = ~np.isnan(betas)
@@ -307,8 +364,8 @@ class Program:
         theta0_1 = min(self.alpha1, self.beta1, self.gamma1)
         thetamax_1 = max(self.alpha1, self.beta1, self.gamma1)
         thetamid_1 = np.median((self.alpha1, self.beta1, self.gamma1))
-        area1 = np.mean(self.faces1['obsahy'])
-        area2 = np.mean(self.faces2['obsahy'])
+        area1 = np.mean(self.faces1['areas'])
+        area2 = np.mean(self.faces2['areas'])
         
         shortest1 = area1/((1/2)*np.sin(theta0_1))
         #law of sine
@@ -337,7 +394,7 @@ class Program:
         plt.fill([x0,x1,x2],[y0,y1,y2], c='C1')
         plt.xticks([1,shortest1], [self.filename1, self.filename2])
         plt.title('Priemerné trojuholníky oboch objektov')
-        fig.text(0.5, 0.01, f'Priemerna plocha prveho='+str(np.mean(self.faces1['obsahy'])) + f'\nPrimerna plocha druheho='+str(np.mean(self.faces2['obsahy'])), ha='center', fontsize=10)
+        fig.text(0.5, 0.01, f'Priemerna plocha prveho='+str(np.mean(self.faces1['areas'])) + f'\nPrimerna plocha druheho='+str(np.mean(self.faces2['areas'])), ha='center', fontsize=10)
         plt.show()
         
     # Function to display boxplot for selected measure
@@ -374,23 +431,23 @@ class Program:
             ax3.set_yscale('log')
             ax4.set_yscale('log')
         # graph oh 1st file
-        ax1.scatter(self.faces1['najdlhsia'].dropna()[data1 > thresh], data1[data1 > thresh], color='red', label='zle', s = 5)
-        ax1.scatter(self.faces1['najdlhsia'].dropna()[data1 <= thresh], data1[data1 <= thresh], color='green', label='dobre', s = 5)
+        ax1.scatter(self.faces1['longest'].dropna()[data1 > thresh], data1[data1 > thresh], color='red', label='zle', s = 5)
+        ax1.scatter(self.faces1['longest'].dropna()[data1 <= thresh], data1[data1 <= thresh], color='green', label='dobre', s = 5)
         ax1.set(xlabel = 'dlzka max hrany', ylabel = 'miera kvality', title = self.filename1)
         
-        ax2.scatter(self.faces1['obsahy'].dropna()[data1 > thresh], data1[data1 > thresh], color='red', label='zle', s = 5)
-        ax2.scatter(self.faces1['obsahy'].dropna()[data1 <= thresh], data1[data1 <= thresh], color='green', label='dobre', s = 5)
+        ax2.scatter(self.faces1['areas'].dropna()[data1 > thresh], data1[data1 > thresh], color='red', label='zle', s = 5)
+        ax2.scatter(self.faces1['areas'].dropna()[data1 <= thresh], data1[data1 <= thresh], color='green', label='dobre', s = 5)
         ax2.set(xlabel='obsah', ylabel='miera kvality', title = self.filename1)
         
         fig.suptitle(selected)
         
         # graph of 2nd file
-        ax3.scatter(self.faces2['najdlhsia'].dropna()[data2 > thresh], data2[data2 > thresh], color='red', label='zle', s = 5)
-        ax3.scatter(self.faces2['najdlhsia'].dropna()[data2 <= thresh], data2[data2 <= thresh], color='green', label='dobre', s = 5)
+        ax3.scatter(self.faces2['longest'].dropna()[data2 > thresh], data2[data2 > thresh], color='red', label='zle', s = 5)
+        ax3.scatter(self.faces2['longest'].dropna()[data2 <= thresh], data2[data2 <= thresh], color='green', label='dobre', s = 5)
         ax3.set(xlabel = 'dlzka max hrany', ylabel = 'miera kvality', title = self.filename2)
         
-        ax4.scatter(self.faces2['obsahy'].dropna()[data2 > thresh], data2[data2 > thresh], color='red', label='zle', s = 5)
-        ax4.scatter(self.faces2['obsahy'].dropna()[data2 <= thresh], data2[data2 <= thresh], color='green', label='dobre', s = 5)
+        ax4.scatter(self.faces2['areas'].dropna()[data2 > thresh], data2[data2 > thresh], color='red', label='zle', s = 5)
+        ax4.scatter(self.faces2['areas'].dropna()[data2 <= thresh], data2[data2 <= thresh], color='green', label='dobre', s = 5)
         ax4.set(xlabel='obsah', ylabel='miera kvality', title = self.filename2)
         
         fig.suptitle(selected)
@@ -407,7 +464,7 @@ class Program:
         fig = plt.figure()
         # graphs of 1st file
         ax1 = fig.add_subplot(221, projection='3d')
-        ax1.set_xlabel('Najdlhsia strana')
+        ax1.set_xlabel('longest strana')
         ax1.set_ylabel('obshah trojuholnika')
         ax1.set_zlabel('miera kvality')
         ax1.set_title(f'3D graf velkosti pre {self.filename1}')
@@ -418,7 +475,7 @@ class Program:
         ax2.set_title(f'3D uhlov pre {self.filename1}')
         # graphs of 2nd. file
         ax3 = fig.add_subplot(223, projection='3d')
-        ax3.set_xlabel('Najdlhsia strana')
+        ax3.set_xlabel('longest strana')
         ax3.set_ylabel('obshah trojuholnika')
         ax3.set_zlabel('miera kvality')
         ax3.set_title(f'3D graf velkosti pre {self.filename2}')
@@ -430,30 +487,30 @@ class Program:
         ax4.set_title(f'3D uhlov pre {self.filename2}')
         
         if self.log_scale:# user choose log scale
-            ax1.scatter(self.faces1['najdlhsia'].dropna()[data1 > thresh],self.faces1['obsahy'][data1 > thresh].dropna(),np.log(data1[data1 > thresh]), color = 'red', label = 'zle')
-            ax1.scatter(self.faces1['najdlhsia'].dropna()[data1 <= thresh],self.faces1['obsahy'][data1 <= thresh].dropna(),np.log(data1[data1 <= thresh]), color = 'green', label = 'dobre')
+            ax1.scatter(self.faces1['longest'].dropna()[data1 > thresh],self.faces1['areas'][data1 > thresh].dropna(),np.log(data1[data1 > thresh]), color = 'red', label = 'zle')
+            ax1.scatter(self.faces1['longest'].dropna()[data1 <= thresh],self.faces1['areas'][data1 <= thresh].dropna(),np.log(data1[data1 <= thresh]), color = 'green', label = 'dobre')
             ax1.set_zscale('log')
-            ax2.scatter(self.faces1['min_uhol'].dropna()[data1 > thresh],self.faces1['max_uhol'].dropna()[data1 > thresh],np.log(data1[data1 > thresh]), color = 'red', label = 'zle')
-            ax2.scatter(self.faces1['min_uhol'].dropna()[data1 <= thresh],self.faces1['max_uhol'].dropna()[data1 <= thresh],np.log(data1[data1 <= thresh]), color = 'green', label = 'dobre')
+            ax2.scatter(self.faces1['min_angle'].dropna()[data1 > thresh],self.faces1['max_angle'].dropna()[data1 > thresh],np.log(data1[data1 > thresh]), color = 'red', label = 'zle')
+            ax2.scatter(self.faces1['min_angle'].dropna()[data1 <= thresh],self.faces1['max_angle'].dropna()[data1 <= thresh],np.log(data1[data1 <= thresh]), color = 'green', label = 'dobre')
             ax2.set_zscale('log')
             
-            ax3.scatter(self.faces2['najdlhsia'].dropna()[data2 > thresh],self.faces2['obsahy'][data2 > thresh].dropna(),np.log(data2[data2 > thresh]), color = 'red', label = 'zle')
-            ax3.scatter(self.faces2['najdlhsia'].dropna()[data2 <= thresh],self.faces2['obsahy'][data2 <= thresh].dropna(),np.log(data2[data2 <= thresh]), color = 'green', label = 'dobre')
+            ax3.scatter(self.faces2['longest'].dropna()[data2 > thresh],self.faces2['areas'][data2 > thresh].dropna(),np.log(data2[data2 > thresh]), color = 'red', label = 'zle')
+            ax3.scatter(self.faces2['longest'].dropna()[data2 <= thresh],self.faces2['areas'][data2 <= thresh].dropna(),np.log(data2[data2 <= thresh]), color = 'green', label = 'dobre')
             ax3.set_zscale('log')
-            ax4.scatter(self.faces2['min_uhol'].dropna()[data2 > thresh],self.faces2['max_uhol'].dropna()[data2 > thresh],np.log(data2[data2 > thresh]), color = 'red', label = 'zle')
-            ax4.scatter(self.faces2['min_uhol'].dropna()[data2 <= thresh],self.faces2['max_uhol'].dropna()[data2 <= thresh],np.log(data2[data2 <= thresh]), color = 'green', label = 'dobre')
+            ax4.scatter(self.faces2['min_angle'].dropna()[data2 > thresh],self.faces2['max_angle'].dropna()[data2 > thresh],np.log(data2[data2 > thresh]), color = 'red', label = 'zle')
+            ax4.scatter(self.faces2['min_angle'].dropna()[data2 <= thresh],self.faces2['max_angle'].dropna()[data2 <= thresh],np.log(data2[data2 <= thresh]), color = 'green', label = 'dobre')
             ax4.set_zscale('log')
         else: # user didnt choose log scale
-            ax1.scatter(self.faces1['najdlhsia'].dropna()[data1 > thresh],self.faces1['obsahy'][data1 > thresh].dropna(),data1[data1 > thresh], color = 'red', label = 'zle')
-            ax1.scatter(self.faces1['najdlhsia'].dropna()[data1 <= thresh],self.faces1['obsahy'][data1 <= thresh].dropna(),data1[data1 <= thresh], color = 'green', label = 'dobre')
+            ax1.scatter(self.faces1['longest'].dropna()[data1 > thresh],self.faces1['areas'][data1 > thresh].dropna(),data1[data1 > thresh], color = 'red', label = 'zle')
+            ax1.scatter(self.faces1['longest'].dropna()[data1 <= thresh],self.faces1['areas'][data1 <= thresh].dropna(),data1[data1 <= thresh], color = 'green', label = 'dobre')
             
-            ax2.scatter(self.faces1['min_uhol'].dropna()[data1 > thresh],self.faces1['max_uhol'].dropna()[data1 > thresh],data1[data1 > thresh], color = 'red', label = 'zle')
-            ax2.scatter(self.faces1['min_uhol'].dropna()[data1 <= thresh],self.faces1['max_uhol'].dropna()[data1 <= thresh],data1[data1 <= thresh], color = 'green', label = 'dobre')
-            ax3.scatter(self.faces2['najdlhsia'].dropna()[data2 > thresh],self.faces2['obsahy'][data2 > thresh].dropna(),data2[data2 > thresh], color = 'red', label = 'zle')
-            ax3.scatter(self.faces2['najdlhsia'].dropna()[data2 <= thresh],self.faces2['obsahy'][data2 <= thresh].dropna(),data2[data2 <= thresh], color = 'green', label = 'dobre')
+            ax2.scatter(self.faces1['min_angle'].dropna()[data1 > thresh],self.faces1['max_angle'].dropna()[data1 > thresh],data1[data1 > thresh], color = 'red', label = 'zle')
+            ax2.scatter(self.faces1['min_angle'].dropna()[data1 <= thresh],self.faces1['max_angle'].dropna()[data1 <= thresh],data1[data1 <= thresh], color = 'green', label = 'dobre')
+            ax3.scatter(self.faces2['longest'].dropna()[data2 > thresh],self.faces2['areas'][data2 > thresh].dropna(),data2[data2 > thresh], color = 'red', label = 'zle')
+            ax3.scatter(self.faces2['longest'].dropna()[data2 <= thresh],self.faces2['areas'][data2 <= thresh].dropna(),data2[data2 <= thresh], color = 'green', label = 'dobre')
             
-            ax4.scatter(self.faces2['min_uhol'].dropna()[data2 > thresh],self.faces2['max_uhol'].dropna()[data2 > thresh],data2[data2 > thresh], color = 'red', label = 'zle')
-            ax4.scatter(self.faces2['min_uhol'].dropna()[data2 <= thresh],self.faces2['max_uhol'].dropna()[data2 <= thresh],data2[data2 <= thresh], color = 'green', label = 'dobre')
+            ax4.scatter(self.faces2['min_angle'].dropna()[data2 > thresh],self.faces2['max_angle'].dropna()[data2 > thresh],data2[data2 > thresh], color = 'red', label = 'zle')
+            ax4.scatter(self.faces2['min_angle'].dropna()[data2 <= thresh],self.faces2['max_angle'].dropna()[data2 <= thresh],data2[data2 <= thresh], color = 'green', label = 'dobre')
                                   
         ax1.legend()
         ax2.legend()
