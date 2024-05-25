@@ -163,7 +163,7 @@ class Program:
         # Rescale mesh2
         mesh2.apply_scale(scale_factor)
 
-        translation_vector = [mesh2.extents[0], 0.0, 0.0]  # Translation of width of the second model unit along the x-axis
+        translation_vector = [mesh2.extents[0], 0.0, 0.0]  # Translation of width of the second model along the x-axis
 
         # Translate the mesh
         mesh1.vertices += translation_vector
