@@ -156,8 +156,6 @@ class Program:
             
     
     def viz_files(self):#method to show files
-        print(self.path1)
-        print(self.path2)
         mesh1 = trimesh.load(self.path1) # first object
         mesh2 = trimesh.load(self.path2)# second object
         scale_factor = mesh1.extents / mesh2.extents # determin scaling factor
@@ -165,7 +163,7 @@ class Program:
         # Rescale mesh2
         mesh2.apply_scale(scale_factor)
 
-        translation_vector = [5.0, 0.0, 0.0]  # Translation of 5 unit along the x-axis
+        translation_vector = [mesh2.extents[0], 0.0, 0.0]  # Translation of width of the second model unit along the x-axis
 
         # Translate the mesh
         mesh1.vertices += translation_vector
