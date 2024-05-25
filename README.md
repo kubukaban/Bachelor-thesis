@@ -9,6 +9,8 @@ This program, encapsulated in the Program class, is designed to visualize and an
 * **faces1:** List of faces from the first file.
 * **vertices2:** List of vertices from the second file.
 * **faces2:** List of faces from the second file.
+* **path1** Path of the the first file
+* **path2** Path of the second file
 * **filename1:** Name of the first file.
 * **filename2:** Name of the second file.
 * **alpha1, beta1, gamma1:** Average angles for the first file.
@@ -24,6 +26,9 @@ Initializes the program, sets up the GUI, and defines important attributes.
 
 * **save(self)**
 Saves the faces data of both files to CSV files.
+
+* **viz_file(self)**
+Render the loaded files
 
 * **to_boxplot(self)**
 Sets the plot type to "boxplot" and updates the display.
