@@ -90,3 +90,4 @@ re: For regular expressions in parsing face data.
 
 # Other files
 ## graph.ipynb
+This jupyter file compare quality of meshes durring shrink-wrappin process and then plot intereting data about the meshe
