@@ -92,4 +92,6 @@ re: For regular expressions in parsing face data.
 ## priemery.py and mediany.py
 Theesee files preprocces the 220 meshe and take interesting information from them. That are ploted in the next file.
 ## graphs.ipynb
-This jupyter file compare quality of meshes durring shrink-wrappin process and then plot intereting data about the meshe
+This jupyternotebook file compare quality of meshes durring shrink-wrappin process and then plot intereting data about the meshe
+## testovanie.r
+This file is used to test similarity beteween 2 models of stanford Bunny
