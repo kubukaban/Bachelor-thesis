@@ -346,7 +346,7 @@ class Program:
         faces['areas'] = result[6]
         faces['min_angle'] = result[7, :] 
         faces['max_angle'] = result[8, :] 
-        print('koniec')
+        print('end of the process')
         mask1 = ~np.isnan(alphas)
         mask2 = ~np.isnan(betas)
         mask3 = ~np.isnan(gammas)
